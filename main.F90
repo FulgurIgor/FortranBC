@@ -89,11 +89,11 @@ contains
         res = numbers(1)
         print *, res
         do i = 1, size(actions)
-            call calcaction(actions(i)%action, res, numbers(i+1))
+            call calcaction_F90(actions(i)%action, res, numbers(i+1))
         end do
     end subroutine docalc
 
-    subroutine calcaction(action, a, b)
+    subroutine calcaction_F03(action, a, b)
         real(kind=16), intent(inout) :: a
         real(kind=16), intent(in)    :: b
         abstract interface
@@ -105,7 +105,19 @@ contains
         end interface
         procedure(func) :: action
         call action(a, b)
-    end subroutine calcaction
+    end subroutine calcaction_F03
+
+    subroutine calcaction_F90(action, a, b)
+        real(kind=16), intent(inout) :: a
+        real(kind=16), intent(in)    :: b
+        interface
+            subroutine action(a, b)
+                real(kind=16), intent(inout) :: a
+                real(kind=16), intent(in)    :: b
+            end subroutine action
+        end interface
+        call action(a, b)
+    end subroutine calcaction_F90
 end module calc
 
 module parser
@@ -126,8 +138,8 @@ contains
         type(action)                               :: act
         real(kind=16)                              :: a, b
 
-        chars = '+-*/^ '
-        numbers = (/2.0, 3.0, 1.0, 2.0, -0.4, 2.2/)
+        chars = '+-*/ '
+        numbers = (/2.0, 3.0, 1.0, 2.0, -0.4/)
         
         allocate(actions(0))
         do i = 1, len(chars)

@@ -1,5 +1,5 @@
 FC    = gfortran
-STD   = -std=f2003
+STD   = -std=std2003
 EXE   = a.out
 
 all:
